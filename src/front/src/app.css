@@ -1,0 +1,40 @@
+body {
+  margin: 0;
+}
+
+nav {
+  display: flex;
+  justify-content: end;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+li {
+  position: relative;
+}
+
+textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid #ccc;
+  border: none;
+}
+
+.btn-add {
+  display: block;
+  background: none;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+}
+
+.btn-trash {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
