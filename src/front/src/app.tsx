@@ -1,94 +1,154 @@
 import React from 'react';
 
-import './app.css';
-
 import type { Note } from './types';
 import { NoteListItem } from './note_list_item';
+import { nanoid } from 'nanoid';
 
-type Mode = 'home' | 'trash';
+import './app.scss';
+import { Header, Mode } from './header';
 
-export const App = () => {
-  const [notes, setNotes] = React.useState(
-    Array.from({ length: 10 }, (_, i) => ({
-      id: i,
-      content: `Note ${i}`,
-      trashed: i % 5 === 0,
-    })),
-  );
+type Props = {
+  defaultNotes: Note[];
+  upsertNote: (note: Note) => void;
+  deleteNote: (id: string) => void;
+};
+
+export const App = (props: Props) => {
+  const { defaultNotes, upsertNote, deleteNote } = props;
+
+  const [notes, setNotes] = React.useState(defaultNotes);
   const [mode, setMode] = React.useState<Mode>('home');
   const [isSearching, setIsSearching] = React.useState(false);
   const [keyword, setKeyword] = React.useState('');
 
-  const onChangeMode = (mode: Mode) => {
+  const onChangeMode = React.useCallback((mode: Mode) => {
     setMode(mode);
-  };
+  }, []);
 
-  const onChangeSearching = () => {
+  const onChangeIsSearching = React.useCallback(() => {
     setIsSearching((prev) => !prev);
-  };
-
-  const onChangeKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setKeyword(e.target.value);
-  };
-
-  const onChangeNote = React.useCallback((note: Note) => {
-    setNotes((prev) => prev.map((n) => (n.id === note.id ? note : n)));
   }, []);
 
-  const onTrashNote = React.useCallback((id: number) => {
-    setNotes((prev) =>
-      prev.map((note) => (note.id === id ? { ...note, trashed: true } : note)),
-    );
-  }, []);
+  const onChangeKeyword = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setKeyword(e.target.value);
+    },
+    [],
+  );
+
+  const onChangeNote = React.useCallback(
+    (note: Note) => {
+      setNotes((prev) => prev.map((n) => (n.id === note.id ? note : n)));
+      upsertNote(note);
+    },
+    [upsertNote],
+  );
+
+  const onTrashNote = React.useCallback(
+    (id: string) => {
+      setNotes((prev) =>
+        prev.map((note) =>
+          note.id === id ? { ...note, trashed: true } : note,
+        ),
+      );
+      deleteNote(id);
+    },
+    [deleteNote],
+  );
 
   const onAddNote = () => {
+    const note = { id: nanoid(), content: '', trashed: false };
     setNotes((prev) => {
-      const id = new Date().getTime();
-      return [...prev, { id, content: `Note ${id}`, trashed: false }];
+      return [...prev, note];
     });
+    upsertNote(note);
+
+    setTimeout(() => {
+      window.scrollTo(0, document.body.scrollHeight);
+    }, 0);
   };
 
-  const canTrash = mode === 'home';
+  const {
+    liveNotes,
+    trashedNotes,
+    filteredLiveNotes,
+    filteredTrashedNotes,
+    isMatchByNoteId,
+  } = React.useMemo(() => {
+    const liveNotes = [];
+    const trashedNotes = [];
+    const filteredLiveNotes = [];
+    const filteredTrashedNotes = [];
+    const isMatchByNoteId: { [id: string]: boolean } = {};
+    for (const note of notes) {
+      const isMatch = note.content.includes(keyword);
+      isMatchByNoteId[note.id] = isMatch;
+      if (note.trashed) {
+        trashedNotes.push(note);
+        if (isMatch) {
+          filteredTrashedNotes.push(note);
+        }
+      } else {
+        liveNotes.push(note);
+        if (isMatch) {
+          filteredLiveNotes.push(note);
+        }
+      }
+    }
+    return {
+      liveNotes,
+      trashedNotes,
+      filteredLiveNotes,
+      filteredTrashedNotes,
+      isMatchByNoteId,
+    };
+  }, [notes, keyword]);
 
   return (
-    <ul>
-      <nav>
-        {isSearching && (
-          <input type="search" value={keyword} onChange={onChangeKeyword} />
-        )}
-        <button onClick={onChangeSearching}>Search</button>
-        <span>{notes.length} notes</span>
-        <button onClick={() => onChangeMode('home')}>Home</button>
-        <button onClick={() => onChangeMode('trash')}>Trash</button>
-      </nav>
-      {notes.map((note) => {
-        const hidden =
-          (mode === 'home' && note.trashed) ||
-          (mode === 'trash' && !note.trashed) ||
-          (isSearching && !note.content.includes(keyword));
+    <>
+      <Header
+        mode={mode}
+        isSearching={isSearching}
+        keyword={keyword}
+        liveNotesCount={liveNotes.length}
+        trashedNotesCount={trashedNotes.length}
+        filteredLiveNotesCount={filteredLiveNotes.length}
+        filteredTrashedNotesCount={filteredTrashedNotes.length}
+        onChangeMode={onChangeMode}
+        onChangeIsSearching={onChangeIsSearching}
+        onChangeKeyword={onChangeKeyword}
+      />
+      <ul className="list-unstyled m-0" style={{ paddingTop: 36 }}>
+        {notes.map((note) => {
+          const isHidden =
+            (mode === 'home' && note.trashed) ||
+            (mode === 'trash' && !note.trashed) ||
+            (isSearching && !isMatchByNoteId[note.id]);
 
-        return (
-          <li
-            key={note.id}
-            style={{ display: hidden ? 'none' : 'block', padding: 10 }}
-          >
-            <NoteListItem
+          return (
+            <li
               key={note.id}
-              note={note}
-              canTrash={canTrash}
-              onChange={onChangeNote}
-              onTrash={onTrashNote}
-            />
+              className={`p-1 pb-0 position-relative border-bottom ${isHidden ? 'd-none' : ''}`}
+            >
+              <NoteListItem
+                note={note}
+                onChange={onChangeNote}
+                onTrash={onTrashNote}
+              />
+            </li>
+          );
+        })}
+        {mode === 'home' && !isSearching && (
+          <li className="d-grid">
+            <button
+              onClick={onAddNote}
+              className="btn btn-light bg-transparent rounded-0"
+            >
+              <i className="bi-plus-lg" />
+            </button>
           </li>
-        );
-      })}
-      {mode === 'home' && !isSearching && (
-        <li>
-          <button onClick={onAddNote} className="btn-add">
-            +
-          </button>
-        </li>
-      )}
-    </ul>
+        )}
+      </ul>
+    </>
   );
 };
