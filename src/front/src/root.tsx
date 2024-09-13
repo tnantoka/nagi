@@ -37,6 +37,7 @@ if (window.ipc) {
         id: String(i),
         content: `Note ${i}`,
         trashed: i % 5 === 0,
+        created_at: new Date(i).toISOString(),
       })),
     );
   };

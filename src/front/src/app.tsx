@@ -16,7 +16,11 @@ type Props = {
 export const App = (props: Props) => {
   const { defaultNotes, upsertNote, deleteNote } = props;
 
-  const [notes, setNotes] = React.useState(defaultNotes);
+  const [notes, setNotes] = React.useState(
+    defaultNotes.sort((a, b) =>
+      (a.created_at ?? '').localeCompare(b.created_at ?? ''),
+    ),
+  );
   const [mode, setMode] = React.useState<Mode>('home');
   const [isSearching, setIsSearching] = React.useState(false);
   const [keyword, setKeyword] = React.useState('');
@@ -46,12 +50,27 @@ export const App = (props: Props) => {
 
   const onTrashNote = React.useCallback(
     (id: string) => {
-      setNotes((prev) =>
-        prev.map((note) =>
-          note.id === id ? { ...note, trashed: true } : note,
-        ),
-      );
-      deleteNote(id);
+      setNotes((prev) => {
+        const prevNote = prev.find((note) => note.id === id);
+        if (!prevNote) {
+          return prev;
+        }
+        const note = { ...prevNote, trashed: !prevNote.trashed };
+        upsertNote(note);
+        return prev.map((n) => (n.id === id ? note : n));
+      });
+    },
+    [upsertNote],
+  );
+
+  const onRestoreNote = onTrashNote;
+
+  const onDeleteNote = React.useCallback(
+    (id: string) => {
+      setNotes((prev) => {
+        deleteNote(id);
+        return prev.filter((n) => n.id !== id);
+      });
     },
     [deleteNote],
   );
@@ -134,6 +153,8 @@ export const App = (props: Props) => {
                 note={note}
                 onChange={onChangeNote}
                 onTrash={onTrashNote}
+                onRestore={onRestoreNote}
+                onDelete={onDeleteNote}
               />
             </li>
           );
