@@ -78,21 +78,23 @@ export const Header = React.memo((props: Props) => {
         )}
       </div>
 
-      <div className="d-flex align-items-center small ms-auto me-2">
-        {isSearching && (
-          <>
-            <span>
-              {mode === 'home'
-                ? filteredLiveNotesCount
-                : filteredTrashedNotesCount}{' '}
-              notes
-            </span>
-            <span className="mx-1">/</span>
-          </>
-        )}
-        <span>
-          {mode === 'home' ? liveNotesCount : trashedNotesCount} notes
-        </span>
+      <div className="d-flex align-items-center ms-auto me-2 fs-6">
+        <div className="small">
+          {isSearching && (
+            <>
+              <span>
+                {mode === 'home'
+                  ? filteredLiveNotesCount
+                  : filteredTrashedNotesCount}{' '}
+                notes
+              </span>
+              <span className="mx-1">/</span>
+            </>
+          )}
+          <span>
+            {mode === 'home' ? liveNotesCount : trashedNotesCount} notes
+          </span>
+        </div>
       </div>
     </div>
   );

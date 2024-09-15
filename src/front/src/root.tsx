@@ -2,14 +2,15 @@ import React from 'react';
 import debounce from 'lodash/debounce';
 
 import { App } from './app.tsx';
-import { Note } from './types.tsx';
+import { Note, Settings } from './types.tsx';
 
 import './root.scss';
 
 declare global {
   interface Window {
     setNotes: React.Dispatch<React.SetStateAction<Note[]>> | null;
-    loadNotes: () => void;
+    setSettings: React.Dispatch<React.SetStateAction<Settings>> | null;
+    init: () => void;
     upsertNote: (note: Note) => void;
     deleteNote: (id: string) => void;
     ipc: {
@@ -18,11 +19,11 @@ declare global {
   }
 }
 
-const UPSERT_DEBOUNCE_WAIT = 1000;
+const UPSERT_DEBOUNCE_WAIT = 300;
 
 if (window.ipc) {
-  window.loadNotes = () => {
-    window.ipc.postMessage('loadNotes:');
+  window.init = () => {
+    window.ipc.postMessage('init:');
   };
   window.upsertNote = debounce((note: Note) => {
     window.ipc.postMessage(`upsertNote:${JSON.stringify(note)}`);
@@ -31,7 +32,7 @@ if (window.ipc) {
     window.ipc.postMessage(`deleteNote:${id}`);
   };
 } else {
-  window.loadNotes = () => {
+  window.init = () => {
     window.setNotes?.(
       Array.from({ length: 10 }, (_, i) => ({
         id: String(i),
@@ -54,23 +55,31 @@ if (window.ipc) {
 }
 
 export const Root = () => {
+  const [isLoaded, setIsLoaded] = React.useState(false);
   const [notes, setNotes] = React.useState<Note[]>([]);
+  const [settings, setSettings] = React.useState({ font_size: 16 });
 
   React.useEffect(() => {
-    window.setNotes = setNotes;
-    window.loadNotes();
+    window.setNotes = (notes) => {
+      setNotes(notes);
+      setIsLoaded(true);
+    };
+    window.setSettings = setSettings;
+    window.init();
 
     return () => {
       window.setNotes = null;
     };
   }, []);
 
-  return notes.length > 0 ? (
-    <App
-      defaultNotes={notes}
-      upsertNote={window.upsertNote}
-      deleteNote={window.deleteNote}
-    />
+  return isLoaded ? (
+    <div style={{ fontSize: settings.font_size }}>
+      <App
+        defaultNotes={notes}
+        upsertNote={window.upsertNote}
+        deleteNote={window.deleteNote}
+      />
+    </div>
   ) : (
     <div className="text-center mt-5">
       <div className="spinner-grow text-secondary" />

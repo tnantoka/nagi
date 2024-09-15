@@ -76,7 +76,7 @@ export const App = (props: Props) => {
   );
 
   const onAddNote = () => {
-    const note = { id: nanoid(), content: '', trashed: false };
+    const note = { id: nanoid(), content: '', trashed: false, created_at: '' };
     setNotes((prev) => {
       return [...prev, note];
     });
