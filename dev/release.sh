@@ -3,4 +3,4 @@
 cd src/front &&\
   npm run build &&\
   cd ../.. &&\
-  cargo build --release
+  cargo bundle --release --target aarch64-apple-darwin

@@ -16,3 +16,4 @@ wry = "0.42.0"
 name = "Nagi"
 identifier = "com.tnantoka.nagi"
 icon = ["bundle/icon@2x.png"]
+osx_minimum_system_version = "13.0"

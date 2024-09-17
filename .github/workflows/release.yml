@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  release:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        cd src/front
+        npm i
+
+    - name: Bundle
+      run: |
+        cargo install cargo-bundle
+        ./dev/release.sh
+
+        TARGET=aarch64-apple-darwin
+        ARCHIVE_NAME="Nagi-$TARGET.tar.gz"
+        mv "target/$TARGET/release/bundle/osx/Nagi.app" .
+        tar -czf "$ARCHIVE_NAME" Nagi.app
+        echo "ARCHIVE_NAME=$ARCHIVE_NAME" >> $GITHUB_ENV
+
+    - uses: softprops/action-gh-release@v2
+      with:
+        files: ${{ env.ARCHIVE_NAME }}
