@@ -7,7 +7,7 @@ Say goodbye to a huge `Untitled.txt`.
 ## Usage
 
 ```
-$ curl -s https://raw.githubusercontent.com/tantoka/nagi/refs/heads/main/dev/setup.sh | bash
+$ curl -s https://raw.githubusercontent.com/tnantoka/nagi/refs/heads/main/dev/setup.sh | bash
 $ open Nagi.app
 ```
 
