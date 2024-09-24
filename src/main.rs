@@ -1,5 +1,6 @@
 mod nagi;
 
+use muda::{Menu, PredefinedMenuItem, Submenu};
 use nagi::{dir::Dir, notes::Note, settings::Settings};
 use tao::{
     dpi::{PhysicalPosition, PhysicalSize},
@@ -65,6 +66,35 @@ fn main() -> wry::Result<()> {
     let webview = web_view_builder(&window)
         .with_ipc_handler(handler)
         .build()?;
+
+    let menu_bar = Menu::new();
+
+    let app_m = Submenu::new("App", true);
+    app_m
+        .append_items(&[&PredefinedMenuItem::quit(None)])
+        .unwrap();
+
+    let edit_m = Submenu::new("&Edit", true);
+    menu_bar.append_items(&[&app_m, &edit_m]).unwrap();
+
+    let undo_i = PredefinedMenuItem::undo(None);
+    let redo_i = PredefinedMenuItem::redo(None);
+    let copy_i = PredefinedMenuItem::copy(None);
+    let cut_i = PredefinedMenuItem::cut(None);
+    let paste_i = PredefinedMenuItem::paste(None);
+
+    edit_m
+        .append_items(&[
+            &undo_i,
+            &redo_i,
+            &PredefinedMenuItem::separator(),
+            &cut_i,
+            &copy_i,
+            &paste_i,
+        ])
+        .unwrap();
+
+    menu_bar.init_for_nsapp();
 
     event_loop.run(move |event: Event<'_, UserEvent>, _, control_flow| {
         *control_flow = ControlFlow::Wait;

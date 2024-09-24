@@ -1,16 +1,17 @@
 [package]
-name = "nagi"
+name = "Nagi"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 dirs = "5.0.1"
+muda = "0.15.0"
 serde = { version = "1.0.209", features = ["derive"] }
 serde_json = "1.0.127"
 sqlx = { version = "0.8.2", features = ["sqlite", "runtime-tokio"] }
-tao = "0.29.1"
+tao = "0.30.2"
 tokio = { version = "1.40.0", features = ["rt-multi-thread"] }
-wry = "0.42.0"
+wry = "0.44.1"
 
 [package.metadata.bundle]
 name = "Nagi"
