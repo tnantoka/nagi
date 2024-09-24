@@ -11,6 +11,10 @@ $ curl -s https://raw.githubusercontent.com/tnantoka/nagi/refs/heads/main/dev/se
 $ open Nagi.app
 ```
 
+## Supported Platforms
+
+- macOS(aarch64-apple-darwin)
+
 ## Settings
 
 Edit the following file then restart Nagi to change the settings.
@@ -22,7 +26,7 @@ $ vim ~/Library/Application\ Support/com.tnantoka.nagi/settings.json
 ## What does Nagi mean?
 
 Nagi is an abbreviation of NAGurigakI.
-"Nagurigaki" means scribbling in Japanese.
+Nagurigaki(なぐり書き) means scribbling in Japanese.
 
 Also, nagi(凪) means calm.
 Putting frustrations in the editor instead of on social media, things will calm down.
@@ -30,7 +34,7 @@ Putting frustrations in the editor instead of on social media, things will calm 
 
 ## Why Nagi?
 
-I'm a compulsive note taker and I write everything down in Notepad. And before I know it, a huge Untitled.txt has been created on my desktop.
+I'm a compulsive note taker and I write everything down in Notepad. And before I know it, a huge `Untitled.txt` has been created on my desktop.
 This is a pain to clean up and search through, so I created Nagi to solve this problem.
 
 ## Why WRY?
