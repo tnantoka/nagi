@@ -30,7 +30,15 @@ impl Note {
 
     pub async fn upsert(id: &str, content: &str, trashed: bool) {
         let pool = Note::pool().await;
-        let _ = sqlx::query("INSERT OR REPLACE INTO notes (id, content, trashed) VALUES (?, ?, ?)")
+        let sql = r#"
+            INSERT INTO notes (id, content, trashed)
+            VALUES (?, ?, ?)
+            ON CONFLICT(id)
+            DO UPDATE SET content = excluded.content,
+                          trashed = excluded.trashed,
+                          created_at = notes.created_at;
+        "#;
+        let _ = sqlx::query(sql)
             .bind(id)
             .bind(content)
             .bind(trashed)
