@@ -19,6 +19,7 @@ pub fn init_menu() {
     let copy_i = PredefinedMenuItem::copy(None);
     let cut_i = PredefinedMenuItem::cut(None);
     let paste_i = PredefinedMenuItem::paste(None);
+    let select_all_i = PredefinedMenuItem::select_all(None);
 
     edit_m
         .append_items(&[
@@ -28,6 +29,7 @@ pub fn init_menu() {
             &cut_i,
             &copy_i,
             &paste_i,
+            &select_all_i,
         ])
         .unwrap();
 
