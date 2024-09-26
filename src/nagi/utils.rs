@@ -43,7 +43,7 @@ pub fn web_view_builder(window: &Window) -> WebViewBuilder {
 
 #[cfg(not(debug_assertions))]
 pub fn web_view_builder(window: &Window) -> WebViewBuilder {
-    const INDEX_HTML: &str = include_str!("./front/dist/index.html");
+    const INDEX_HTML: &str = include_str!("../front/dist/index.html");
     WebViewBuilder::new(window).with_html(INDEX_HTML)
 }
 
