@@ -2,7 +2,7 @@ import React from 'react';
 
 import type { Note } from './types';
 
-const MIN_ROWS = 5;
+const MIN_ROWS = 1;
 
 type Props = {
   note: Note;
