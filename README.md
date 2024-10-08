@@ -30,7 +30,7 @@ Nagurigaki(なぐり書き) means scribbling in Japanese.
 
 Also, nagi(凪) means calm.
 Putting frustrations in the editor instead of on social media, things will calm down.
-(Nagi is also known as a skill in Demon Slayer.)
+(Nagi is known as the skill "Dead Calm" in Demon Slayer.)
 
 ## Why Nagi?
 
